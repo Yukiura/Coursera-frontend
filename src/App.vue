@@ -1,26 +1,31 @@
 <template>
   <div id="app">
-<!--    <div style="width: 960px; height: 532px; display:block;">
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-      <CourseCard :class-id="1"/>
-    </div>-->
+    <MyHeader/>
+    <div>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <script>
-//import CourseCard from "@/components/CourseCard";
+
+import MyHeader from "@/components/MyHeader";
 
 export default {
   name: 'App',
-  //components: {CourseCard}
+  components: {MyHeader},
+  mounted() {
+    console.log('App', this)
+  }
 }
 </script>
 
 <style>
+html {
+  background-color: #eff2f6;
+}
+
+body {
+  margin: 0;
+}
 </style>

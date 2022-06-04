@@ -1,7 +1,7 @@
 <template>
   <div>
     <LiveTV/>
-    <ChatZone/>
+    <ChatZone class-id="1"/>
   </div>
 </template>
 
@@ -13,10 +13,13 @@ export default {
   name: "ClassRoom",
   components: {LiveTV, ChatZone},
   data() {
-    return {}
+    return {
+      token: ''
+    }
   },
   methods: {},
-  mounted() {
+  beforeCreate() {
+    this.token = localStorage.getItem('token')
   }
 }
 </script>
