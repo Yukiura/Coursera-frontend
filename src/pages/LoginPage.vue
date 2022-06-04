@@ -18,7 +18,7 @@
         <el-input v-model="loginForm.password" type="password" prefix-icon="el-icon-key"></el-input>
       </div>
       <div class="button-wrapper">
-        <el-link type="primary">注册新用户</el-link>
+        <el-link type="primary" @click="toRegister">注册新用户</el-link>
         <el-button type="primary" @click="onsubmit" style="width: 100px; float: right" round>登录</el-button>
       </div>
     </el-card>
@@ -72,9 +72,13 @@ export default {
         })
         this.$router.push('/class')
       })
+    },
+    toRegister() {
+      axios.get('/api/unit/all').then(res => {
+        this.$store.dispatch('setUnitList', res.data)
+        this.$router.push('/register')
+      })
     }
-  },
-  mounted() {
   }
 }
 </script>
