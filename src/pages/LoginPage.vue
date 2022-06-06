@@ -58,14 +58,24 @@ export default {
         localStorage.setItem('token', res.data.data.token)
         this.$store.dispatch('setUsername', this.loginForm.username)
         this.$store.dispatch('login')
+        // 获取用户头像
         axios.get('/api/user/avatar', {
           headers: {
             token: localStorage.getItem('token')
           }
         }).then(res => {
-          console.log(res.data)
           this.$store.dispatch('setAvatar', res.data)
         })
+        // 获取用户身份
+        axios.get('/api/user/role', {
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        }).then(res => {
+          console.log("用户身份: " + res.data)
+          this.$store.dispatch('setRoleList', res.data)
+        })
+        // 提示登录成功
         this.$message({
           message: '登录成功',
           type: 'success'
@@ -74,10 +84,7 @@ export default {
       })
     },
     toRegister() {
-      axios.get('/api/unit/all').then(res => {
-        this.$store.dispatch('setUnitList', res.data)
-        this.$router.push('/register')
-      })
+      this.$router.push('/register')
     }
   }
 }

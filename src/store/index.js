@@ -13,8 +13,14 @@ const actions = {
     setUsername(context, name) {
         context.commit('USERNAME', name)
     },
-    setUnitList(context, uList) {
-        context.commit('UNITLIST', uList)
+    setRoleList(context, li) {
+        context.commit('ROLE', li)
+    },
+    setSearchResults(context, results) {
+        context.commit('RESULT', results)
+    },
+    setSearchText(context, text) {
+        context.commit('SEARCH', text)
     }
 }
 const mutations = {
@@ -28,15 +34,23 @@ const mutations = {
     USERNAME(state, name) {
         state.username = name
     },
-    UNITLIST(state, uList) {
-        state.unitList = uList
+    ROLE(state, li) {
+        state.roleList = li
+    },
+    RESULT(state, results) {
+        state.searchResultList = results
+    },
+    SEARCH(state, text) {
+        state.searchText = text
     }
 }
 const state = {
     loginStat: false,
     userAvatar: '',
     username: '游客',
-    unitList: []
+    roleList: [],
+    searchResultList: [],
+    searchText: ''
 }
 
 export default new Vuex.Store({

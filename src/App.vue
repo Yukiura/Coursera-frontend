@@ -13,10 +13,7 @@ import MyHeader from "@/components/MyHeader";
 
 export default {
   name: 'App',
-  components: {MyHeader},
-  mounted() {
-    console.log('App', this)
-  }
+  components: {MyHeader}
 }
 </script>
 

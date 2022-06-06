@@ -34,7 +34,7 @@
         </el-form-item>
         <el-form-item label="学校" prop="unit">
           <el-select v-model="ruleForm.unit" placeholder="请选择学校">
-            <el-option v-for="item in this.$store.state.unitList" :label="item" :value="item" :key="item"></el-option>
+            <el-option v-for="item in this.unitList" :label="item" :value="item" :key="item"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -72,6 +72,7 @@ export default {
         phone: '',
         unit: ''
       },
+      unitList: [],
       rules: {
         pass: [
           {required: true, message: '请输入密码', trigger: 'blur'}
@@ -127,6 +128,11 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
+  },
+  mounted() {
+    axios.get('/api/unit/all').then(res => {
+      this.unitList = res.data
+    })
   }
 }
 </script>

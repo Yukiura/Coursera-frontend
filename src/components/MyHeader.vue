@@ -8,6 +8,7 @@
           </div>
         </div>
         <div class="nav-search-box">
+          <SearchBar/>
         </div>
         <div class="nav-user-center">
           <div class="user-con signin">
@@ -33,9 +34,11 @@
 
 <script>
 import logo from '../assets/logo.png'
+import SearchBar from "@/components/SearchBar";
 
 export default {
   name: "PageHeader",
+  components: {SearchBar},
   data() {
     return {
       logoImg: logo,
@@ -44,7 +47,8 @@ export default {
   },
   methods: {
     handleAvatar() {
-      this.$router.push('/login')
+      if (this.$route.path !== '/login')
+        this.$router.push('/login')
     },
     check() {
       console.log('登录状态: ' + this.$store.state.loginStat)
@@ -103,6 +107,7 @@ export default {
   margin: 0 10px;
   width: 500px;
   transition: 0.3s width;
+  display: flex;
 }
 
 .international-header {
