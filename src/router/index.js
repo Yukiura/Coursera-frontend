@@ -4,6 +4,7 @@ import ClassRoom from "@/pages/ClassRoom";
 import RegisterPage from "@/pages/RegisterPage";
 import SearchPage from "@/pages/SearchPage";
 import HomePage from "@/pages/HomePage";
+import MyCourses from "@/pages/MyCourses";
 
 export default new VueRouter({
     routes: [
@@ -17,6 +18,7 @@ export default new VueRouter({
         },
         {
             path: '/class',
+            name: 'classroom',
             component: ClassRoom
         },
         {
@@ -28,6 +30,10 @@ export default new VueRouter({
             path: '/search',
             component: SearchPage,
             props: true
+        },
+        {
+            path: '/mycourses',
+            component: MyCourses
         }
     ]
 })

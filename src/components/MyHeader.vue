@@ -6,6 +6,9 @@
           <div class="item">
             <el-image :src="logoImg" style="height: 40px"></el-image>
           </div>
+          <div class="option">
+            <span class="navi-span" @click="toCoursePage">我的课程</span>
+          </div>
         </div>
         <div class="nav-search-box">
           <SearchBar/>
@@ -53,6 +56,12 @@ export default {
     check() {
       console.log('登录状态: ' + this.$store.state.loginStat)
       console.log('用户名: ' + this.$store.state.username)
+    },
+    toCoursePage() {
+      if (this.$store.state.loginStat)
+        this.$router.push('/mycourses')
+      else
+        this.$router.push('/login')
     }
   }
 }
@@ -62,6 +71,11 @@ export default {
 .international-header {
   min-width: 999px;
   min-height: 56px;
+}
+
+.nav-link {
+  height: 40px;
+  display: flex;
 }
 
 .nav-item {
@@ -158,5 +172,19 @@ a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, bo
 
 div {
   display: block;
+}
+
+.option {
+  display: flex;
+  height: 40px;
+  /* 水平居中 */
+  justify-content: center;
+  /* 垂直居中 */
+  align-items: center;
+  margin-left: 20px;
+}
+
+.navi-span:hover {
+  cursor: pointer;
 }
 </style>

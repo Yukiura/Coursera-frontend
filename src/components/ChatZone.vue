@@ -1,10 +1,21 @@
 <template>
-  <div>
-    <el-card>
-      <MsgItem v-for="msg in msgList" :msg-body="msg" :key="msg.time"/>
-      <el-input v-model="input" placeholder="请输入内容"></el-input>
-      <el-button @click="send" :disabled="sendCheck">发送</el-button>
-    </el-card>
+  <div class="chat-zone-wrapper">
+    <el-container style="height: 120px;">
+
+    </el-container>
+    <div class="history-msg">
+      <el-container style="height: 459px; overflow-y:scroll;">
+        <el-col>
+          <el-row v-for="msg in msgList" :key="msg.time">
+            <MsgItem :msg-body="msg"/>
+          </el-row>
+        </el-col>
+      </el-container>
+    </div>
+    <div class="input-zone">
+      <el-input v-model="input" placeholder="说点什么，参与互动吧" style="width: 292px"></el-input>
+      <el-button @click="send" :disabled="sendCheck" style="margin-top: 8px; float: right; margin-right: 10px" type="primary">发送</el-button>
+    </div>
   </div>
 </template>
 
@@ -60,7 +71,7 @@ export default {
       socket.send(JSON.stringify({
         code: 200,
         type: "CLASS",
-        data: this.classId,
+        data: this.classId + '',
         sender: this.username,
         receiver: "SYS"
       }))
@@ -91,5 +102,50 @@ export default {
 </script>
 
 <style scoped>
+.chat-zone-wrapper {
+  width: 302px;
+  height: 732px;
+  display: block;
+  background-color: white;
+  border: 1px solid #E3E5E7;;
+  border-radius: 12px;
+}
 
+.input-zone {
+  width: 292px;
+  height: 100px;
+  display: block;
+  padding: 5px;
+  background-color: #eff2f6;
+}
+
+.history-msg {
+  height: 459px;
+  background-color: #eff2f6;
+  padding: 5px;
+}
+
+/*定义滚动条高宽及背景
+ 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+  width: 8px;
+  height: 14px;
+  background-color: #F5F5F5;
+}
+
+/*定义滚动条轨道
+ 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+/*定义滑块
+ 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #999999;
+}
 </style>
