@@ -9,15 +9,86 @@
         <SearchResult v-for="result in this.$store.state.searchResultList" :result-body="result" :key="result.cid"/>
       </div>
     </div>
+    <el-dialog title="收货地址" :visible.sync="selectionFormVisible">
+      <el-form>
+        <el-form-item label="班级" :label-width="formLabelWidth">
+          <el-select v-model="selectedClassroomId" placeholder="请选择班级">
+            <el-option v-for="classroom in classroomList" :label="classroom.name" :value="classroom.id"
+                       :key="classroom.id"/>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="selectionFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="selectionFormConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import SearchResult from "@/components/SearchResult";
+import axios from "axios";
 
 export default {
   name: "SearchPage",
-  components: {SearchResult}
+  components: {SearchResult},
+  data() {
+    return {
+      selectionFormVisible: false,
+      formLabelWidth: '120px',
+      selectedClassroomId: '',
+      selectedCourseId: '',
+      classroomList: []
+    }
+  },
+  methods: {
+    selectionFormConfirm() {
+      axios.get('/api/classroom/verify', {
+        headers: {
+          token: localStorage.getItem('token')
+        },
+        params: {
+          classroomId: this.selectedClassroomId
+        }
+      }).then(res => {
+        const result = res.data
+        if (result === true) {
+          this.$message.error('不能重复选择');
+        } else {
+          axios.post('/api/classroom/select', null, {
+            headers: {
+              token: localStorage.getItem('token')
+            },
+            params: {
+              classroomId: this.selectedClassroomId
+            }
+          }).then(res => {
+            if (res.data === 1) {
+              this.$message.success('选课成功')
+            }
+            this.selectionFormVisible = false
+          })
+        }
+      })
+    }
+  },
+  mounted() {
+    this.$bus.$on('select', (cid) => {
+      this.selectedCourseId = cid
+      axios.get('/api/classroom/course', {
+        headers: {
+          token: localStorage.getItem('token')
+        },
+        params: {
+          courseId: cid
+        }
+      }).then(res => {
+        this.classroomList = res.data
+        this.selectionFormVisible = true
+      })
+    })
+  }
 }
 </script>
 

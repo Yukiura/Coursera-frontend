@@ -1,5 +1,5 @@
 <template>
-  <div class="result-wrapper">
+  <div class="result-wrapper" @click="select">
     <div class="cover-wrapper">
       <el-image :src="this.resultBody.cover" class="cover-img"/>
     </div>
@@ -25,7 +25,12 @@
 <script>
 export default {
   name: "SearchResult",
-  props: ['resultBody']
+  props: ['resultBody'],
+  methods: {
+    select() {
+      this.$bus.$emit('select', this.resultBody.cid)
+    }
+  }
 }
 </script>
 
