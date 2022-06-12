@@ -9,7 +9,7 @@
         <SearchResult v-for="result in this.$store.state.searchResultList" :result-body="result" :key="result.cid"/>
       </div>
     </div>
-    <el-dialog title="收货地址" :visible.sync="selectionFormVisible">
+    <el-dialog title="选择班级" :visible.sync="selectionFormVisible">
       <el-form>
         <el-form-item label="班级" :label-width="formLabelWidth">
           <el-select v-model="selectedClassroomId" placeholder="请选择班级">
@@ -54,7 +54,7 @@ export default {
       }).then(res => {
         const result = res.data
         if (result === true) {
-          this.$message.error('不能重复选择');
+          this.$message.error('不能重复选课');
         } else {
           axios.post('/api/classroom/select', null, {
             headers: {
@@ -75,6 +75,11 @@ export default {
   },
   mounted() {
     this.$bus.$on('select', (cid) => {
+      if (this.$store.state.loginStat === false) {
+        this.$message.info('请先登录')
+        this.$router.push('/login')
+        return
+      }
       this.selectedCourseId = cid
       axios.get('/api/classroom/course', {
         headers: {

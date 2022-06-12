@@ -1,7 +1,6 @@
 <template>
   <div class="chat-zone-wrapper">
     <el-container style="height: 120px;">
-
     </el-container>
     <div class="history-msg">
       <el-container style="height: 459px; overflow-y:scroll;">
@@ -14,8 +13,48 @@
     </div>
     <div class="input-zone">
       <el-input v-model="input" placeholder="说点什么，参与互动吧" style="width: 292px"></el-input>
-      <el-button @click="send" :disabled="sendCheck" style="margin-top: 8px; float: right; margin-right: 10px" type="primary">发送</el-button>
+      <div class="operation-zone">
+        <div class="interaction-zone">
+        </div>
+        <el-button @click="send" :disabled="sendCheck" type="primary">发送</el-button>
+      </div>
     </div>
+    <el-dialog title="签到" :visible.sync="signInDialogVisible">
+      <div v-show="startSignInVisible">
+        <div v-show="signInEnded">
+          <el-form>
+            <el-form-item label="发起签到" :label-width="formLabelWidth">
+              <el-select v-model="duration" placeholder="请选择签到持续时长">
+                <el-option label="5分钟" value="5"></el-option>
+                <el-option label="10分钟" value="10"></el-option>
+                <el-option label="15分钟" value="15"></el-option>
+                <el-option label="30分钟" value="30"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <el-button @click="startSignIn" type="primary">开始</el-button>
+        </div>
+        <div v-show="signInOnGoing">
+          <span>签到将于{{ signInTimeLeft }}后结束</span>
+        </div>
+        <el-table :data="signedInList">
+          <el-table-column property="sid" label="学号" width="150"></el-table-column>
+          <el-table-column property="name" label="姓名" width="200"></el-table-column>
+        </el-table>
+      </div>
+      <div v-show="signInVisible">
+        <div v-show="signInOnGoing">
+          <span>签到将于{{ signInTimeLeft }}后结束</span>
+          <el-button @click="signIn" type="primary" :disabled="signInCompleted">签到</el-button>
+        </div>
+        <div v-show="signInCompleted">
+          <span>您已经完成签到</span>
+        </div>
+        <div v-show="signInEnded">
+          <span>老师尚未发布签到</span>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -34,7 +73,18 @@ export default {
       username: '',
       msgList: [],
       studentList: [],
-      input: ''
+      input: '',
+      signInDialogVisible: false,
+      duration: '',
+      formLabelWidth: '120px',
+      signInTimeLeft: '',
+      signedInList: [],
+      startSignInVisible: false,
+      signInVisible: false,
+      role: '',
+      signInOnGoing: false,
+      signInCompleted: false,
+      signInEnded: false
     }
   },
   computed: {
@@ -47,14 +97,38 @@ export default {
       socket.send(JSON.stringify({
         code: 200,
         type: "TEXT",
-        data: this.input,
-        sender: this.username,
-        receiver: "SYS"
+        data: this.input
       }))
       this.input = ''
+    },
+    startSignIn() {
+      socket.send(JSON.stringify({
+        code: 200,
+        type: 'SIGN_IN_START',
+        data: this.duration
+      }))
+    },
+    signIn() {
+      socket.send(JSON.stringify({
+        code: 200,
+        type: 'SIGN_IN',
+        data: null
+      }))
     }
   },
   mounted() {
+    const roleSet = new Set(this.$store.state.roleList)
+    this.startSignInVisible = roleSet.has('教师')
+    this.signInVisible = roleSet.has('学生')
+    this.role = roleSet.has('教师') ? 1 : 0
+    this.$bus.$on('sign_in', () => {
+      socket.send(JSON.stringify({
+        code: 200,
+        type: 'SIGN_IN_STATUS',
+        data: null
+      }))
+      this.signInDialogVisible = true
+    })
     this.token = localStorage.getItem('token')
     this.username = localStorage.getItem('username')
     socket = new WebSocket('ws://localhost:80/chat')
@@ -64,16 +138,12 @@ export default {
       socket.send(JSON.stringify({
         code: 200,
         type: "VERIFY",
-        data: this.token,
-        sender: this.username,
-        receiver: "SYS"
+        data: this.token
       }))
       socket.send(JSON.stringify({
         code: 200,
         type: "CLASS",
-        data: this.classId + '',
-        sender: this.username,
-        receiver: "SYS"
+        data: this.classId + ''
       }))
       // 设置消息处理逻辑
       socket.onmessage = (msg) => {
@@ -93,6 +163,24 @@ export default {
           // 获取消息
           msgBody.id = this.msgList[this.msgList.length - 1].id + 1
           this.msgList.push(msgBody.data)
+        } else if (msgType === 'COUNTDOWN') {
+          this.signInTimeLeft = msgBody.data
+        } else if (msgType === 'SIGN_IN_LIST') {
+          this.signedInList = msgBody.data
+        } else if (msgType === 'SIGN_IN_STATUS') {
+          let signInStatus = msgBody.data
+          if (signInStatus === 2) {
+            this.signInOnGoing = false
+            this.signInCompleted = true
+          } else if (signInStatus === 1) {
+            this.signInCompleted = false
+            this.signInOnGoing = true
+            this.signInEnded = false
+          } else if (signInStatus === 0) {
+            this.signInOnGoing = false
+            this.signInCompleted = false
+            this.signInEnded = true
+          }
         }
       }
     }
@@ -123,6 +211,25 @@ export default {
   height: 459px;
   background-color: #eff2f6;
   padding: 5px;
+}
+
+.operation-zone {
+  display: flex;
+  margin-top: 10px;
+}
+
+.interaction-zone {
+  display: flex;
+  width: 220px;
+}
+
+.interaction-item {
+  display: flex;
+  width: 40px;
+  /* 水平居中 */
+  justify-content: center;
+  /* 垂直居中 */
+  align-items: center;
 }
 
 /*定义滚动条高宽及背景

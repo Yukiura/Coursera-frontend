@@ -28,7 +28,6 @@ const mutations = {
         state.loginStat = true
     },
     AVATAR(state, src) {
-        console.log('调用头像更新')
         state.userAvatar = src
     },
     USERNAME(state, name) {

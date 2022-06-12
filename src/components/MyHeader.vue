@@ -58,10 +58,12 @@ export default {
       console.log('用户名: ' + this.$store.state.username)
     },
     toCoursePage() {
-      if (this.$store.state.loginStat)
+      if (this.$store.state.loginStat) {
         this.$router.push('/mycourses')
-      else
+      } else {
+        this.$message.info('请先登录')
         this.$router.push('/login')
+      }
     }
   }
 }

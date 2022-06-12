@@ -5,6 +5,9 @@
         <span>我的课程</span>
       </div>
       <div class="course-list-wrapper">
+        <div v-show="isEmpty">
+          <el-empty description="还没有任何课程哦"></el-empty>
+        </div>
         <CourseCard v-for="cid in classList" :class-id="cid" :key="cid"/>
       </div>
     </div>
@@ -20,7 +23,8 @@ export default {
   components: {CourseCard},
   data() {
     return {
-      classList: []
+      classList: [],
+      isEmpty: false
     }
   },
   mounted() {
@@ -30,6 +34,7 @@ export default {
       }
     }).then(res => {
       this.classList = res.data
+      this.isEmpty = this.classList.length === 0
     })
   }
 }
